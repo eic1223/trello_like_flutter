@@ -30,6 +30,7 @@ class MainScreenViewModel extends ChangeNotifier {
     Board(id: 0, name: "A", items: []),
     Board(id: 1, name: "B", items: []),
     Board(id: 2, name: "C", items: []),
+    Board(id: 3, name: "D", items: []),
   ];
 
   loadData() {
