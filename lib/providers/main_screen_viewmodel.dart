@@ -76,4 +76,21 @@ class MainScreenViewModel extends ChangeNotifier {
   bool isLastBoard(Board board) {
     return board.id == _boards[_boards.length].id;
   }
+
+  editItem(Item item, int boardId, String newName) {
+    //
+    for (int i = 0; i < _boards.length; i++) {
+      if (_boards[i].id == boardId) {
+        print("board found!");
+        for (int k = 0; k < _boards[i].items.length; k++) {
+          if (_boards[i].items[k].id == item.id) {
+            print("item found!");
+            _boards[i].items[k].name = newName;
+            print("editItem() - item name changed with newName: $newName");
+          }
+        }
+      }
+    }
+    notifyListeners();
+  }
 }

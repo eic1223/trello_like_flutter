@@ -72,6 +72,45 @@ class MainScreen extends StatelessWidget {
     print("showNewItemDialog()");
   }
 
+  void showEditItemDialog(
+      BuildContext context, MainScreenViewModel vm, Item item, int boardId) {
+    TextEditingController controller = TextEditingController();
+    AlertDialog dialog = AlertDialog(
+      title: const Text("Edit Item"),
+      content: Container(
+        child: TextField(
+          controller: controller..text = item.name,
+        ),
+      ),
+      actions: [
+        MaterialButton(
+          onPressed: () {
+            // dismiss
+            Navigator.pop(context);
+          },
+          child: Text("CANCEL"),
+        ),
+        MaterialButton(
+          onPressed: () {
+            // save
+            vm.editItem(item, boardId, controller.value.text);
+            //
+            Navigator.pop(context);
+          },
+          child: Text("SAVE"),
+        )
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (_) => dialog,
+      barrierDismissible: true,
+    );
+
+    print("showNewItemDialog()");
+  }
+
   /// WIDGETS
   Widget BoardWidget(
       BuildContext context, MainScreenViewModel vm, Board board) {
@@ -80,32 +119,38 @@ class MainScreen extends StatelessWidget {
       child: Container(
         width: 300,
         height: 400,
-        color: Colors.grey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: double.infinity,
-              height: 40,
-              child: Center(
-                child: Text(board.name),
+        color: const Color.fromRGBO(207, 207, 207, 1), // #CFCFCF
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                height: 40,
+                decoration: BoxDecoration(border: Border.all()),
+                child: Center(
+                  child: Text(board.name),
+                ),
               ),
-            ),
-            SizedBox(
-              width: double.infinity,
-              child: Column(
-                children:
-                    board.items.map((e) => ItemWidget(e, board, vm)).toList(),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: Column(
+                  children: board.items
+                      .map((e) => ItemWidget(context, e, board, vm))
+                      .toList(),
+                ),
               ),
-            ),
-            NewItemWidget(context, vm, board.id),
-          ],
+              NewItemWidget(context, vm, board.id),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget ItemWidget(Item item, Board board, MainScreenViewModel vm) {
+  Widget ItemWidget(
+      BuildContext context, Item item, Board board, MainScreenViewModel vm) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Container(
@@ -126,7 +171,12 @@ class MainScreen extends StatelessWidget {
                         child: Text("<"),
                       ),
                     ),
-              Text(item.name),
+              GestureDetector(
+                onTap: () {
+                  showEditItemDialog(context, vm, item, board.id);
+                },
+                child: Text(item.name),
+              ),
               board.id == vm.getBoards.last.id
                   ? Container()
                   : GestureDetector(
